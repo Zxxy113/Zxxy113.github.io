@@ -91,10 +91,13 @@
   @media (max-width:560px){.masonry{columns:1;}.nav-links{display:none;}.hero{padding:56px 20px 36px;}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}html{scroll-behavior:auto;}}
 
-  /* ============ 音乐播放器 ============ */
-  .player-wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px 32px;}
-  .player-wrap .player-label{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
-  .aplayer{background:var(--panel);border:1px solid var(--line);border-radius:12px;font-family:var(--font-sans);}
+  /* ============ 音乐播放器：右侧中部固定小窗 ============ */
+  .aplayer{background:var(--panel);border:1px solid var(--line);border-radius:12px;font-family:var(--font-sans);
+    box-shadow:0 8px 32px rgba(0,0,0,.45);}
+  /* fixed 模式默认在左下角，这里覆盖到右侧中部 */
+  .aplayer.aplayer-fixed{left:auto !important;right:20px;bottom:auto !important;top:50%;transform:translateY(-50%);}
+  .aplayer.aplayer-fixed .aplayer-body{background:var(--panel);border-radius:12px;border:1px solid var(--line);}
+  .aplayer.aplayer-fixed .aplayer-list{border-radius:12px;overflow:hidden;}
   .aplayer .aplayer-info .aplayer-music{color:var(--ink);}
   .aplayer .aplayer-info .aplayer-music .aplayer-author{color:var(--dim);}
   .aplayer .aplayer-list ol li{color:var(--dim);border-top:1px solid var(--line);}
@@ -112,9 +115,13 @@
   .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb{background:var(--accent);}
   .aplayer .aplayer-info .aplayer-controller .aplayer-time{color:var(--faint);}
   .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-icon{color:var(--dim);}
+  /* 移动端：右下角，避免遮挡 */
+  @media (max-width:560px){.aplayer.aplayer-fixed{right:10px;left:auto !important;}}
 </style>
 </head>
 <body>
+
+  <div id="player"></div>
 
   <div class="notice">
     <b>我还年轻，我不想被遗忘</b>
@@ -135,11 +142,6 @@
     <h1>把想象<br>变成<span class="accent">画面</span></h1>
     <p class="sub">AI 剧情短片 × 动漫角色二创 × 中式志怪世界观。此间每一帧，皆为未竟之梦。</p>
   </section>
-
-  <div class="player-wrap">
-    <div class="player-label">Music · 网易云歌单</div>
-    <div id="player"></div>
-  </div>
 
   <section class="work" id="work">
     <div class="section-head">
@@ -430,27 +432,39 @@
 })();
 </script>
 
-<!-- 音乐播放器：APlayer + MetingJS -->
+<!-- 音乐播放器：APlayer 自托管（本地音频） -->
 <script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
 <script>
-  // 用 MetingJS 从网易云拉取歌单并交给 APlayer
-  // meting 默认 endpoint 是 i-meto，可用 api 参数指定
-  var metingEl = document.createElement('meting-js');
-  metingEl.setAttribute('server', 'netease');
-  metingEl.setAttribute('type', 'playlist');
-  metingEl.setAttribute('id', '8587825003');
-  metingEl.setAttribute('fixed', 'false');
-  metingEl.setAttribute('mini', 'false');
-  metingEl.setAttribute('autoplay', 'false');
-  metingEl.setAttribute('theme', '#9fc4b0');
-  metingEl.setAttribute('loop', 'all');
-  metingEl.setAttribute('order', 'list');
-  metingEl.setAttribute('preload', 'auto');
-  metingEl.setAttribute('list-folded', 'false');
-  metingEl.setAttribute('list-max-height', '420px');
-  metingEl.setAttribute('lrc-type', '0');
-  document.getElementById('player').appendChild(metingEl);
+(function(){
+  fetch('playlist.json')
+    .then(function(r){ return r.json(); })
+    .then(function(list){
+      var ap = new APlayer({
+        container: document.getElementById('player'),
+        fixed: true,          // 固定悬浮
+        mini: false,          // 保留封面
+        autoplay: false,
+        theme: '#9fc4b0',
+        loop: 'all',
+        order: 'list',
+        preload: 'none',      // 点播放才加载音频，不拖慢页面
+        listFolded: true,     // 默认收起列表，只留封面小圆
+        listMaxHeight: '320px',
+        audio: list.map(function(s){
+          return {
+            name: s.name,
+            artist: s.artist,
+            url: s.url,
+            cover: s.cover,
+            lrc: ''
+          };
+        })
+      });
+      // 点击封面才展开列表（fixed 模式自带），音量默认适中
+      ap.volume(0.7, false);
+    })
+    .catch(function(){ console.warn('歌单加载失败'); });
+})();
 </script>
 </body>
 </html>
