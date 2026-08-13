@@ -79,6 +79,9 @@
   .lightbox img{max-width:100%;max-height:78vh;border-radius:8px;border:1px solid var(--line);}
   .lightbox h3{margin-top:16px;font-size:18px;}
   .lightbox p{color:var(--dim);font-size:13px;margin-top:4px;}
+  .lightbox .lb-download{display:inline-block;margin-top:18px;padding:11px 26px;border-radius:8px;
+    background:var(--accent);color:#0a0a0c;font-weight:600;font-size:14px;transition:all .2s;}
+  .lightbox .lb-download:hover{transform:translateY(-2px);opacity:.88;}
   .lightbox .close{position:absolute;top:22px;right:28px;font-size:34px;color:var(--dim);
     background:none;border:none;cursor:pointer;line-height:1;}
   .lightbox .close:hover{color:var(--ink);}
@@ -350,6 +353,7 @@
       <img id="lbImg" src="" alt="">
       <h3 id="lbTitle"></h3>
       <p id="lbTag"></p>
+      <a id="lbDownload" href="#" download class="lb-download">下载原图 ⬇</a>
     </div>
   </div>
 
@@ -380,12 +384,14 @@
   var lbImg = document.getElementById('lbImg');
   var lbTitle = document.getElementById('lbTitle');
   var lbTag = document.getElementById('lbTag');
+  var lbDownload = document.getElementById('lbDownload');
   cards.forEach(function(c){
     c.addEventListener('click', function(){
       var img = c.querySelector('img');
       lbImg.src = img.src;
       lbTitle.textContent = c.dataset.title;
       lbTag.textContent = c.dataset.tag;
+      lbDownload.href = img.getAttribute('src').replace('web/', 'assets/').replace('.jpg', '.png');
       lb.classList.add('open');
       document.body.style.overflow = 'hidden';
     });
