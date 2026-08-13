@@ -121,6 +121,37 @@
   .mp-list li .mp-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .mp-list li.active .mp-name{color:var(--accent);}
   @media (max-width:560px){.music-player{right:10px;width:230px;}.mp-list{max-height:220px;}}
+
+  /* ============ 视频作品 ============ */
+  .video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
+  .vcard{border-radius:14px;overflow:hidden;background:var(--panel);border:1px solid var(--line);
+    cursor:pointer;transition:transform .25s,border-color .25s;}
+  .vcard:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.22);}
+  .vthumb{position:relative;aspect-ratio:16/9;overflow:hidden;background:#000;}
+  .vthumb img{width:100%;height:100%;object-fit:cover;display:block;transition:transform .4s;}
+  .vcard:hover .vthumb img{transform:scale(1.04);}
+  .vplay{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);
+    width:58px;height:58px;border-radius:50%;background:rgba(10,10,12,.65);
+    border:1px solid var(--line);display:grid;place-items:center;color:var(--ink);
+    font-size:20px;transition:all .25s;pointer-events:none;}
+  .vcard:hover .vplay{background:var(--accent);color:#0a0a0c;border-color:transparent;}
+  .vdur{position:absolute;right:10px;bottom:10px;font-size:11px;padding:3px 9px;
+    background:rgba(0,0,0,.62);border-radius:5px;color:var(--ink);}
+  .vinfo{padding:14px 16px 16px;}
+  .vinfo h3{font-size:16px;font-weight:600;margin-bottom:5px;}
+  .vmeta{font-size:12px;color:var(--faint);display:flex;gap:10px;flex-wrap:wrap;align-items:center;}
+  .vmeta .vbadge{color:var(--accent);border:1px solid var(--accent-dim, #5f7f70);padding:1px 8px;border-radius:4px;}
+  .vlightbox{position:fixed;inset:0;z-index:100;background:rgba(5,5,6,.94);display:none;
+    align-items:center;justify-content:center;padding:32px;}
+  .vlightbox.open{display:flex;}
+  .vlightbox .vinner{width:min(1000px,94vw);text-align:center;}
+  .vlightbox video{width:100%;max-height:78vh;border-radius:8px;border:1px solid var(--line);background:#000;}
+  .vlightbox h3{margin-top:16px;font-size:18px;color:var(--ink);}
+  .vlightbox p{color:var(--dim);font-size:13px;margin-top:4px;}
+  .vlightbox .close{position:absolute;top:22px;right:28px;font-size:34px;color:var(--dim);
+    background:none;border:none;cursor:pointer;line-height:1;}
+  .vlightbox .close:hover{color:var(--ink);}
+  @media (max-width:900px){.video-grid{grid-template-columns:1fr;}}
 </style>
 </head>
 <body>
@@ -134,7 +165,8 @@
     <nav class="nav">
       <div class="brand"><span class="mark">织</span>织夏小忆<small>AI 影像创作</small></div>
       <div class="nav-links">
-        <a href="#work">作品</a>
+        <a href="#work">图片</a>
+        <a href="#videos">视频</a>
         <a href="#about">关于</a>
       </div>
     </nav>
@@ -148,7 +180,7 @@
 
   <section class="work" id="work">
     <div class="section-head">
-      <h2>作品 <span class="count" id="count"></span></h2>
+      <h2>图片作品 <span class="count" id="count"></span></h2>
       <div class="filters">
         <button class="filter active" data-f="all">全部</button>
         <button class="filter" data-f="anime">动漫二创</button>
@@ -360,6 +392,13 @@
     </div>
   </section>
 
+  <section class="work" id="videos">
+    <div class="section-head">
+      <h2>视频作品 <span class="count" id="vcount"></span></h2>
+    </div>
+    <div class="video-grid" id="videoGrid"></div>
+  </section>
+
   <section class="about" id="about">
     <div>
       <h2>关于我</h2>
@@ -388,6 +427,15 @@
       <a id="lbDownload" href="#" download class="lb-download">下载原图 ⬇</a>
     </div>
   </div>
+  <div class="vlightbox" id="vlightbox">
+    <button class="close" id="vlbClose">×</button>
+    <div class="vinner">
+      <video id="vlbVideo" controls playsinline></video>
+      <h3 id="vlbTitle"></h3>
+      <p id="vlbMeta"></p>
+    </div>
+  </div>
+
 
 <script>
 (function(){
@@ -432,6 +480,55 @@
   document.getElementById('lbClose').addEventListener('click', closeLb);
   lb.addEventListener('click', function(e){if(e.target===lb)closeLb();});
   document.addEventListener('keydown', function(e){if(e.key==='Escape')closeLb();});
+})();
+
+/* ============ 视频作品加载 ============ */
+(function(){
+  var grid = document.getElementById('videoGrid');
+  var vcount = document.getElementById('vcount');
+  var vlb = document.getElementById('vlightbox');
+  var vlbVideo = document.getElementById('vlbVideo');
+  var vlbTitle = document.getElementById('vlbTitle');
+  var vlbMeta = document.getElementById('vlbMeta');
+
+  fetch('videos.json')
+    .then(function(r){ return r.json(); })
+    .then(function(list){
+      list.forEach(function(v){
+        var card = document.createElement('div');
+        card.className = 'vcard';
+        card.innerHTML =
+          '<div class="vthumb"><img src="' + v.cover + '" alt="' + v.title + '" loading="lazy">' +
+          '<div class="vplay">▶</div>' +
+          '<div class="vdur">' + v.duration + '</div></div>' +
+          '<div class="vinfo"><h3>' + v.title + '</h3>' +
+          '<div class="vmeta"><span class="vbadge">' + v.series + '</span>' +
+          '<span>' + v.episode + '</span><span>' + v.model + '</span></div></div>';
+        card.addEventListener('click', function(){ openVideo(v); });
+        grid.appendChild(card);
+      });
+      vcount.textContent = '（' + list.length + ' 部）';
+    })
+    .catch(function(){ vcount.textContent = '（加载失败）'; });
+
+  function openVideo(v){
+    vlbVideo.src = v.src;
+    vlbTitle.textContent = v.title;
+    vlbMeta.textContent = v.series + ' · ' + v.episode + ' · ' + v.model + ' · ' + v.duration;
+    vlb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+    vlbVideo.play().catch(function(){});
+  }
+  function closeVlb(){
+    vlb.classList.remove('open');
+    vlbVideo.pause();
+    vlbVideo.removeAttribute('src');
+    vlbVideo.load();
+    document.body.style.overflow = '';
+  }
+  document.getElementById('vlbClose').addEventListener('click', closeVlb);
+  vlb.addEventListener('click', function(e){ if(e.target === vlb) closeVlb(); });
+  document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeVlb(); });
 })();
 </script>
 

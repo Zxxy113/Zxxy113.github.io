@@ -1,0 +1,12 @@
+[
+  {
+    "id": 1,
+    "title": "唤醒 · 第一集 第一场",
+    "series": "唤醒",
+    "episode": "第 1 集 · 第 1 场",
+    "model": "MiniMax H3",
+    "src": "video/01.mp4",
+    "cover": "video/covers/01.jpg",
+    "duration": "15秒"
+  }
+]
