@@ -92,35 +92,40 @@
 
   /* ============ 音乐播放器：竖版右侧固定 ============ */
   .music-player{position:fixed;right:20px;top:50%;transform:translateY(-50%);
-    width:280px;background:var(--panel);border:1px solid var(--line);border-radius:14px;
-    box-shadow:0 12px 40px rgba(0,0,0,.5);z-index:60;overflow:hidden;font-family:var(--font-sans);}
+    width:220px;background:var(--panel);border:1px solid var(--line);border-radius:12px;
+    box-shadow:0 10px 32px rgba(0,0,0,.5);z-index:60;overflow:hidden;font-family:var(--font-sans);}
   .mp-cover{width:100%;aspect-ratio:1/1;background:var(--panel-2,#1a1a1e);overflow:hidden;}
   .mp-cover img{width:100%;height:100%;object-fit:cover;display:block;}
-  .mp-info{padding:14px 16px 8px;}
-  .mp-title{font-size:15px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .mp-artist{font-size:12px;color:var(--dim);margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-  .mp-progress{padding:10px 16px 4px;}
-  .mp-bar{position:relative;height:4px;background:var(--line);border-radius:2px;cursor:pointer;}
+  .mp-info{padding:11px 13px 6px;}
+  .mp-title{font-size:13px;font-weight:600;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mp-artist{font-size:11px;color:var(--dim);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .mp-progress{padding:8px 13px 3px;}
+  .mp-bar{position:relative;height:3px;background:var(--line);border-radius:2px;cursor:pointer;}
   .mp-bar-fill{position:absolute;left:0;top:0;height:100%;width:0;background:var(--accent);border-radius:2px;}
-  .mp-time{display:flex;justify-content:space-between;font-size:11px;color:var(--faint);margin-top:6px;}
-  .mp-controls{display:flex;align-items:center;justify-content:center;gap:20px;padding:8px 16px 12px;}
+  .mp-time{display:flex;justify-content:space-between;font-size:10px;color:var(--faint);margin-top:5px;}
+  .mp-controls{display:flex;align-items:center;justify-content:center;gap:14px;padding:6px 13px 10px;}
   .mp-btn{background:none;border:none;cursor:pointer;color:var(--ink);display:flex;align-items:center;justify-content:center;
-    width:40px;height:40px;border-radius:50%;transition:all .2s;padding:0;}
+    width:32px;height:32px;border-radius:50%;transition:all .2s;padding:0;}
   .mp-btn:hover{color:var(--accent);background:rgba(255,255,255,.06);}
-  .mp-btn svg{width:20px;height:20px;fill:currentColor;}
-  .mp-btn-play{width:48px;height:48px;background:var(--accent);color:#0a0a0c;}
+  .mp-btn svg{width:17px;height:17px;fill:currentColor;}
+  .mp-btn-play{width:38px;height:38px;background:var(--accent);color:#0a0a0c;}
   .mp-btn-play:hover{background:var(--accent);color:#0a0a0c;transform:scale(1.06);}
-  .mp-btn-play svg{width:22px;height:22px;}
-  .mp-list{max-height:280px;overflow-y:auto;border-top:1px solid var(--line);}
+  .mp-btn-play svg{width:19px;height:19px;}
+  .mp-mode{display:flex;align-items:center;justify-content:center;gap:8px;padding:0 13px 10px;}
+  .mp-mode button{background:none;border:1px solid var(--line);border-radius:999px;padding:3px 12px;
+    font-size:11px;color:var(--dim);cursor:pointer;transition:all .15s;}
+  .mp-mode button:hover{color:var(--ink);border-color:var(--dim);}
+  .mp-mode button.on{color:var(--accent);border-color:var(--accent);}
+  .mp-list{max-height:180px;overflow-y:auto;border-top:1px solid var(--line);}
   .mp-list ul{list-style:none;margin:0;padding:0;}
-  .mp-list li{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;
-    color:var(--dim);font-size:13px;transition:all .15s;}
+  .mp-list li{display:flex;align-items:center;gap:8px;padding:7px 13px;cursor:pointer;
+    color:var(--dim);font-size:12px;transition:all .15s;}
   .mp-list li:hover{background:rgba(255,255,255,.04);color:var(--ink);}
   .mp-list li.active{color:var(--accent);}
-  .mp-list li .mp-idx{font-size:11px;color:var(--faint);width:18px;flex-shrink:0;}
+  .mp-list li .mp-idx{font-size:10px;color:var(--faint);width:16px;flex-shrink:0;}
   .mp-list li .mp-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
   .mp-list li.active .mp-name{color:var(--accent);}
-  @media (max-width:560px){.music-player{right:10px;width:230px;}.mp-list{max-height:220px;}}
+  @media (max-width:560px){.music-player{right:10px;width:200px;}.mp-list{max-height:160px;}}
 
   /* ============ 视频作品 ============ */
   .video-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:24px;}
@@ -581,6 +586,7 @@
 (function(){
   var audio = new Audio();
   var list = [], cur = -1, playing = false;
+  var mode = 'order';  // 'order' 顺序 | 'random' 随机
 
   var PLAY_SVG  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   var PAUSE_SVG = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
@@ -637,8 +643,36 @@
   }
   function pause(){ audio.pause(); playing = false; updatePlayIcon(); }
   function toggle(){ playing ? pause() : play(); }
-  function next(){ load((cur + 1) % list.length); play(); }
-  function prev(){ load((cur - 1 + list.length) % list.length); play(); }
+  function next(){
+    if(list.length === 0) return;
+    if(mode === 'random'){
+      // 随机选一首（避免和当前重复）
+      var r;
+      do { r = Math.floor(Math.random() * list.length); } while(r === cur && list.length > 1);
+      load(r);
+    } else {
+      load((cur + 1) % list.length);
+    }
+    play();
+  }
+  function prev(){
+    if(list.length === 0) return;
+    if(mode === 'random'){
+      var r;
+      do { r = Math.floor(Math.random() * list.length); } while(r === cur && list.length > 1);
+      load(r);
+    } else {
+      load((cur - 1 + list.length) % list.length);
+    }
+    play();
+  }
+  function setMode(m){
+    mode = m;
+    var orderBtn = document.getElementById('mpModeOrder');
+    var randBtn = document.getElementById('mpModeRandom');
+    if(orderBtn) orderBtn.classList.toggle('on', m === 'order');
+    if(randBtn) randBtn.classList.toggle('on', m === 'random');
+  }
 
   function initDom(){
     var root = document.createElement('div');
@@ -652,6 +686,10 @@
       '<button class="mp-btn" title="上一曲">' + PREV_SVG + '</button>' +
       '<button class="mp-btn mp-btn-play" title="播放/暂停">' + PLAY_SVG + '</button>' +
       '<button class="mp-btn" title="下一曲">' + NEXT_SVG + '</button>' +
+      '</div>' +
+      '<div class="mp-mode">' +
+      '<button id="mpModeOrder" class="on" title="顺序播放">顺序</button>' +
+      '<button id="mpModeRandom" title="随机播放">随机</button>' +
       '</div>' +
       '<div class="mp-list"><ul></ul></div>';
     document.body.appendChild(root);
@@ -670,6 +708,10 @@
     btns[0].addEventListener('click', prev);
     playBtn.addEventListener('click', toggle);
     btns[2].addEventListener('click', next);
+
+    // 播放模式切换
+    document.getElementById('mpModeOrder').addEventListener('click', function(){ setMode('order'); });
+    document.getElementById('mpModeRandom').addEventListener('click', function(){ setMode('random'); });
 
     // 进度条：点击 + 拖动（DOM 就绪后绑定）
     var dragging = false;
