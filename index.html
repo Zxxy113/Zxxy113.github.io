@@ -152,6 +152,18 @@
     background:none;border:none;cursor:pointer;line-height:1;}
   .vlightbox .close:hover{color:var(--ink);}
   @media (max-width:900px){.video-grid{grid-template-columns:1fr;}}
+
+  /* ============ 快速引导 + 回到顶部 ============ */
+  .quick-nav{position:fixed;right:20px;bottom:24px;z-index:55;display:flex;flex-direction:column;gap:10px;}
+  .qn-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 12px;
+    background:rgba(20,20,23,.85);border:1px solid var(--line);border-radius:12px;cursor:pointer;
+    color:var(--dim);transition:all .2s;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);}
+  .qn-btn svg{width:20px;height:20px;fill:currentColor;}
+  .qn-btn span{font-size:11px;letter-spacing:.05em;}
+  .qn-btn:hover{color:var(--ink);border-color:rgba(255,255,255,.25);transform:translateY(-2px);}
+  .qn-btn.qn-top{color:var(--accent);border-color:var(--accent-dim, #5f7f70);}
+  .qn-btn.qn-top:hover{color:var(--accent);border-color:var(--accent);}
+  @media (max-width:560px){.quick-nav{right:10px;bottom:16px;gap:8px;}.qn-btn{padding:8px 10px;}}
 </style>
 </head>
 <body>
@@ -418,6 +430,22 @@
     <span>AI 影像作品集 · 由 Hermes 搭建</span>
   </footer>
 
+  <!-- 快速引导 + 回到顶部 -->
+  <div class="quick-nav">
+    <button class="qn-btn" data-target="work" title="图片作品">
+      <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
+      <span>图片</span>
+    </button>
+    <button class="qn-btn" data-target="videos" title="视频作品">
+      <svg viewBox="0 0 24 24"><path d="M10 8v8l6-4-6-4zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+      <span>视频</span>
+    </button>
+    <button class="qn-btn qn-top" id="backTop" title="回到顶部">
+      <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
+      <span>顶部</span>
+    </button>
+  </div>
+
   <div class="lightbox" id="lightbox">
     <button class="close" id="lbClose">×</button>
     <div class="inner">
@@ -480,6 +508,22 @@
   document.getElementById('lbClose').addEventListener('click', closeLb);
   lb.addEventListener('click', function(e){if(e.target===lb)closeLb();});
   document.addEventListener('keydown', function(e){if(e.key==='Escape')closeLb();});
+})();
+
+/* ============ 快速引导 + 回到顶部 ============ */
+(function(){
+  var navBtns = document.querySelectorAll('.qn-btn');
+  navBtns.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var target = btn.getAttribute('data-target');
+      if(target){
+        var el = document.getElementById(target);
+        if(el) el.scrollIntoView({behavior:'smooth', block:'start'});
+      } else {
+        window.scrollTo({top:0, behavior:'smooth'});
+      }
+    });
+  });
 })();
 
 /* ============ 视频作品加载 ============ */
