@@ -116,6 +116,17 @@
     font-size:10px;color:var(--dim);cursor:pointer;transition:all .15s;}
   .mp-mode button:hover{color:var(--ink);border-color:var(--dim);}
   .mp-mode button.on{color:var(--accent);border-color:var(--accent);}
+  .mp-volume{display:flex;align-items:center;gap:6px;padding:0 12px 8px;}
+  .mp-vol-btn{background:none;border:none;cursor:pointer;color:var(--dim);display:flex;align-items:center;
+    justify-content:center;padding:0;flex-shrink:0;transition:color .15s;}
+  .mp-vol-btn:hover{color:var(--ink);}
+  .mp-vol-btn svg{width:16px;height:16px;fill:currentColor;}
+  .mp-vol-slider{-webkit-appearance:none;appearance:none;flex:1;height:3px;background:var(--line);
+    border-radius:2px;cursor:pointer;outline:none;margin:0;}
+  .mp-vol-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:11px;height:11px;
+    border-radius:50%;background:var(--accent);cursor:pointer;}
+  .mp-vol-slider::-moz-range-thumb{width:11px;height:11px;border-radius:50%;background:var(--accent);
+    border:none;cursor:pointer;}
   .mp-list{max-height:92px;overflow-y:auto;border-top:1px solid var(--line);}
   .mp-list ul{list-style:none;margin:0;padding:0;}
   .mp-list li{display:flex;align-items:center;gap:8px;padding:6px 12px;cursor:pointer;
@@ -587,13 +598,16 @@
   var audio = new Audio();
   var list = [], cur = -1, playing = false;
   var mode = 'order';  // 'order' 顺序 | 'random' 随机
+  var lastVol = 0.7;   // 静音前的音量记忆
 
   var PLAY_SVG  = '<svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>';
   var PAUSE_SVG = '<svg viewBox="0 0 24 24"><path d="M6 5h4v14H6zM14 5h4v14h-4z"/></svg>';
   var PREV_SVG  = '<svg viewBox="0 0 24 24"><path d="M6 6h2v12H6zm3.5 6L18 6v12z"/></svg>';
   var NEXT_SVG  = '<svg viewBox="0 0 24 24"><path d="M16 6h2v12h-2zM6 6l8.5 6L6 18z"/></svg>';
+  var VOL_SVG   = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/></svg>';
+  var MUTE_SVG  = '<svg viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3z"/><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02z"/><path d="M19 8.5l5.5 5.5M24.5 8.5L19 14" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
 
-  var coverImg, titleEl, artistEl, barEl, barFill, curTimeEl, durTimeEl, playBtn, listUl;
+  var coverImg, titleEl, artistEl, barEl, barFill, curTimeEl, durTimeEl, playBtn, listUl, volBtn, volSlider;
 
   function fmt(t){
     if(isNaN(t) || t < 0) return '0:00';
@@ -673,6 +687,21 @@
     if(orderBtn) orderBtn.classList.toggle('on', m === 'order');
     if(randBtn) randBtn.classList.toggle('on', m === 'random');
   }
+  function updateVolIcon(){
+    if(!volBtn) return;
+    volBtn.innerHTML = (audio.volume === 0) ? MUTE_SVG : VOL_SVG;
+  }
+  function setVolume(v){
+    v = Math.max(0, Math.min(1, v));
+    audio.volume = v;
+    if(volSlider) volSlider.value = Math.round(v * 100);
+    if(v > 0) lastVol = v;
+    updateVolIcon();
+  }
+  function toggleMute(){
+    if(audio.volume > 0){ setVolume(0); }
+    else { setVolume(lastVol || 0.7); }
+  }
 
   function initDom(){
     var root = document.createElement('div');
@@ -691,6 +720,10 @@
       '<button id="mpModeOrder" class="on" title="顺序播放">顺序</button>' +
       '<button id="mpModeRandom" title="随机播放">随机</button>' +
       '</div>' +
+      '<div class="mp-volume">' +
+      '<button class="mp-vol-btn" id="mpVolBtn" title="静音/取消静音">' + VOL_SVG + '</button>' +
+      '<input type="range" class="mp-vol-slider" id="mpVolSlider" min="0" max="100" value="70">' +
+      '</div>' +
       '<div class="mp-list"><ul></ul></div>';
     document.body.appendChild(root);
 
@@ -703,6 +736,8 @@
     durTimeEl = root.querySelector('.mp-dur');
     playBtn = root.querySelector('.mp-btn-play');
     listUl = root.querySelector('.mp-list ul');
+    volBtn = root.querySelector('#mpVolBtn');
+    volSlider = root.querySelector('#mpVolSlider');
 
     var btns = root.querySelectorAll('.mp-btn');
     btns[0].addEventListener('click', prev);
@@ -712,6 +747,10 @@
     // 播放模式切换
     document.getElementById('mpModeOrder').addEventListener('click', function(){ setMode('order'); });
     document.getElementById('mpModeRandom').addEventListener('click', function(){ setMode('random'); });
+
+    // 音量控制
+    volBtn.addEventListener('click', toggleMute);
+    volSlider.addEventListener('input', function(){ setVolume(volSlider.value / 100); });
 
     // 进度条：点击 + 拖动（DOM 就绪后绑定）
     var dragging = false;
@@ -739,7 +778,7 @@
     audio.addEventListener('ended', function(){ next(); });
     audio.addEventListener('play', function(){ playing = true; updatePlayIcon(); });
     audio.addEventListener('pause', function(){ playing = false; updatePlayIcon(); });
-    audio.volume = 0.7;
+    setVolume(0.7);
   }
 
   initDom();
