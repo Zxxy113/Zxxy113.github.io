@@ -4,6 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>织夏小忆 · AI 影像作品集</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.css">
 <style>
   :root{
     --bg:#0a0a0c; --panel:#141417; --ink:#e8e4dd; --dim:#9a958e; --faint:#6b6660;
@@ -89,6 +90,28 @@
   @media (max-width:900px){.masonry{columns:2;}.about{grid-template-columns:1fr;gap:28px;}}
   @media (max-width:560px){.masonry{columns:1;}.nav-links{display:none;}.hero{padding:56px 20px 36px;}}
   @media (prefers-reduced-motion:reduce){*{transition:none!important;}html{scroll-behavior:auto;}}
+
+  /* ============ 音乐播放器 ============ */
+  .player-wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px 32px;}
+  .player-wrap .player-label{font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--faint);margin-bottom:12px;}
+  .aplayer{background:var(--panel);border:1px solid var(--line);border-radius:12px;font-family:var(--font-sans);}
+  .aplayer .aplayer-info .aplayer-music{color:var(--ink);}
+  .aplayer .aplayer-info .aplayer-music .aplayer-author{color:var(--dim);}
+  .aplayer .aplayer-list ol li{color:var(--dim);border-top:1px solid var(--line);}
+  .aplayer .aplayer-list ol li:hover{background:rgba(255,255,255,.04);}
+  .aplayer .aplayer-list ol li.aplayer-list-light{background:rgba(255,255,255,.06);}
+  .aplayer .aplayer-list ol li .aplayer-list-cur{color:var(--accent);}
+  .aplayer .aplayer-list ol li .aplayer-list-index{color:var(--faint);}
+  .aplayer .aplayer-list ol li .aplayer-list-author{color:var(--faint);}
+  .aplayer .aplayer-lrc{color:var(--dim);}
+  .aplayer .aplayer-lrc p{color:var(--dim);}
+  .aplayer .aplayer-lrc p.aplayer-lrc-current{color:var(--accent);}
+  .aplayer .aplayer-pic{background-color:var(--panel-2, #1a1a1e);}
+  .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-loaded{background:var(--faint);}
+  .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played{background:var(--accent);}
+  .aplayer .aplayer-info .aplayer-controller .aplayer-bar-wrap .aplayer-bar .aplayer-played .aplayer-thumb{background:var(--accent);}
+  .aplayer .aplayer-info .aplayer-controller .aplayer-time{color:var(--faint);}
+  .aplayer .aplayer-info .aplayer-controller .aplayer-time .aplayer-icon{color:var(--dim);}
 </style>
 </head>
 <body>
@@ -112,6 +135,11 @@
     <h1>把想象<br>变成<span class="accent">画面</span></h1>
     <p class="sub">AI 剧情短片 × 动漫角色二创 × 中式志怪世界观。此间每一帧，皆为未竟之梦。</p>
   </section>
+
+  <div class="player-wrap">
+    <div class="player-label">Music · 网易云歌单</div>
+    <div id="player"></div>
+  </div>
 
   <section class="work" id="work">
     <div class="section-head">
@@ -400,6 +428,29 @@
   lb.addEventListener('click', function(e){if(e.target===lb)closeLb();});
   document.addEventListener('keydown', function(e){if(e.key==='Escape')closeLb();});
 })();
+</script>
+
+<!-- 音乐播放器：APlayer + MetingJS -->
+<script src="https://cdn.jsdelivr.net/npm/aplayer@1.10.1/dist/APlayer.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/meting@2.0.1/dist/Meting.min.js"></script>
+<script>
+  // 用 MetingJS 从网易云拉取歌单并交给 APlayer
+  // meting 默认 endpoint 是 i-meto，可用 api 参数指定
+  var metingEl = document.createElement('meting-js');
+  metingEl.setAttribute('server', 'netease');
+  metingEl.setAttribute('type', 'playlist');
+  metingEl.setAttribute('id', '8587825003');
+  metingEl.setAttribute('fixed', 'false');
+  metingEl.setAttribute('mini', 'false');
+  metingEl.setAttribute('autoplay', 'false');
+  metingEl.setAttribute('theme', '#9fc4b0');
+  metingEl.setAttribute('loop', 'all');
+  metingEl.setAttribute('order', 'list');
+  metingEl.setAttribute('preload', 'auto');
+  metingEl.setAttribute('list-folded', 'false');
+  metingEl.setAttribute('list-max-height', '420px');
+  metingEl.setAttribute('lrc-type', '0');
+  document.getElementById('player').appendChild(metingEl);
 </script>
 </body>
 </html>
