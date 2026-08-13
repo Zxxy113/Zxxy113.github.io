@@ -499,36 +499,6 @@
   function next(){ load((cur + 1) % list.length); play(); }
   function prev(){ load((cur - 1 + list.length) % list.length); play(); }
 
-  // 进度条：点击 + 拖动
-  var dragging = false;
-  function seekFromEvent(e){
-    var rect = barEl.getBoundingClientRect();
-    var ratio = (e.clientX - rect.left) / rect.width;
-    ratio = Math.max(0, Math.min(1, ratio));
-    if(audio.duration) audio.currentTime = ratio * audio.duration;
-  }
-  barEl.addEventListener('mousedown', function(e){ dragging = true; seekFromEvent(e); });
-  document.addEventListener('mousemove', function(e){ if(dragging) seekFromEvent(e); });
-  document.addEventListener('mouseup', function(){ dragging = false; });
-  barEl.addEventListener('touchstart', function(e){ dragging = true; seekFromEvent(e.touches[0]); }, {passive:false});
-  barEl.addEventListener('touchmove', function(e){ if(dragging) seekFromEvent(e.touches[0]); }, {passive:false});
-  document.addEventListener('touchend', function(){ dragging = false; });
-
-  audio.addEventListener('timeupdate', function(){
-    if(audio.duration){
-      var pct = audio.currentTime / audio.duration * 100;
-      barFill.style.width = pct + '%';
-      curTimeEl.textContent = fmt(audio.currentTime);
-    }
-  });
-  audio.addEventListener('loadedmetadata', function(){
-    durTimeEl.textContent = fmt(audio.duration);
-  });
-  audio.addEventListener('ended', function(){ next(); });
-  audio.addEventListener('play', function(){ playing = true; updatePlayIcon(); });
-  audio.addEventListener('pause', function(){ playing = false; updatePlayIcon(); });
-  audio.volume = 0.7;
-
   function initDom(){
     var root = document.createElement('div');
     root.className = 'music-player';
@@ -555,9 +525,38 @@
     playBtn = root.querySelector('.mp-btn-play');
     listUl = root.querySelector('.mp-list ul');
 
-    root.querySelectorAll('.mp-btn')[0].addEventListener('click', prev);
+    var btns = root.querySelectorAll('.mp-btn');
+    btns[0].addEventListener('click', prev);
     playBtn.addEventListener('click', toggle);
-    root.querySelectorAll('.mp-btn')[2].addEventListener('click', next);
+    btns[2].addEventListener('click', next);
+
+    // 进度条：点击 + 拖动（DOM 就绪后绑定）
+    var dragging = false;
+    function seekFromEvent(e){
+      var rect = barEl.getBoundingClientRect();
+      var ratio = (e.clientX - rect.left) / rect.width;
+      ratio = Math.max(0, Math.min(1, ratio));
+      if(audio.duration) audio.currentTime = ratio * audio.duration;
+    }
+    barEl.addEventListener('mousedown', function(e){ dragging = true; seekFromEvent(e); });
+    document.addEventListener('mousemove', function(e){ if(dragging) seekFromEvent(e); });
+    document.addEventListener('mouseup', function(){ dragging = false; });
+    barEl.addEventListener('touchstart', function(e){ dragging = true; seekFromEvent(e.touches[0]); }, {passive:false});
+    barEl.addEventListener('touchmove', function(e){ if(dragging) seekFromEvent(e.touches[0]); }, {passive:false});
+    document.addEventListener('touchend', function(){ dragging = false; });
+
+    // audio 事件
+    audio.addEventListener('timeupdate', function(){
+      if(audio.duration){
+        barFill.style.width = (audio.currentTime / audio.duration * 100) + '%';
+        curTimeEl.textContent = fmt(audio.currentTime);
+      }
+    });
+    audio.addEventListener('loadedmetadata', function(){ durTimeEl.textContent = fmt(audio.duration); });
+    audio.addEventListener('ended', function(){ next(); });
+    audio.addEventListener('play', function(){ playing = true; updatePlayIcon(); });
+    audio.addEventListener('pause', function(){ playing = false; updatePlayIcon(); });
+    audio.volume = 0.7;
   }
 
   initDom();
