@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>织夏小忆 · AI 影像作品集</title>
+<style>
+  :root{
+    --bg:#0a0a0c; --panel:#141417; --ink:#e8e4dd; --dim:#9a958e; --faint:#6b6660;
+    --line:rgba(255,255,255,.08); --accent:#9fc4b0;
+    --font-sans:"PingFang SC","Hiragino Sans GB","Microsoft YaHei","Noto Sans CJK SC",system-ui,sans-serif;
+    --maxw:1320px;
+  }
+  *{margin:0;padding:0;box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{background:var(--bg);color:var(--ink);font-family:var(--font-sans);line-height:1.6;
+    -webkit-font-smoothing:antialiased;}
+  a{color:inherit;text-decoration:none;}
+  ::selection{background:var(--accent);color:#0a0a0c;}
+
+  .notice{background:var(--panel);border-bottom:1px solid var(--line);font-size:13px;color:var(--dim);
+    padding:10px 24px;display:flex;gap:10px;align-items:center;flex-wrap:wrap;}
+  .notice b{color:var(--accent);font-weight:600;}
+
+  header{position:sticky;top:0;z-index:50;background:rgba(10,10,12,.82);
+    backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--line);}
+  .nav{max-width:var(--maxw);margin:0 auto;display:flex;align-items:center;justify-content:space-between;padding:18px 24px;}
+  .brand{display:flex;align-items:center;gap:10px;font-weight:700;font-size:16px;letter-spacing:.02em;}
+  .brand .mark{width:26px;height:26px;border-radius:6px;background:var(--accent);color:#0a0a0c;
+    display:grid;place-items:center;font-size:14px;}
+  .brand small{font-weight:400;color:var(--faint);}
+  .nav-links{display:flex;gap:28px;}
+  .nav-links a{font-size:14px;color:var(--dim);transition:color .2s;}
+  .nav-links a:hover{color:var(--ink);}
+
+  .hero{max-width:var(--maxw);margin:0 auto;padding:88px 24px 48px;}
+  .hero .eyebrow{font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--accent);
+    margin-bottom:20px;display:flex;align-items:center;gap:12px;}
+  .hero .eyebrow::before{content:"";width:32px;height:1px;background:var(--accent);}
+  .hero h1{font-size:clamp(36px,6vw,68px);line-height:1.08;font-weight:800;letter-spacing:-.01em;max-width:18ch;}
+  .hero h1 .accent{color:var(--accent);}
+  .hero .sub{margin-top:24px;font-size:18px;color:var(--dim);max-width:50ch;}
+
+  .work{max-width:var(--maxw);margin:0 auto;padding:24px 24px 64px;}
+  .section-head{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;gap:16px;flex-wrap:wrap;}
+  .section-head h2{font-size:24px;font-weight:700;}
+  .section-head .count{color:var(--faint);font-size:14px;}
+  .filters{display:flex;gap:8px;flex-wrap:wrap;}
+  .filter{padding:8px 18px;border-radius:999px;font-size:14px;cursor:pointer;border:1px solid var(--line);
+    color:var(--dim);background:transparent;transition:all .2s;}
+  .filter:hover{color:var(--ink);border-color:var(--dim);}
+  .filter.active{background:var(--ink);color:#0a0a0c;border-color:var(--ink);}
+
+  .masonry{columns:3;column-gap:20px;}
+  .card{break-inside:avoid;margin-bottom:20px;cursor:pointer;border-radius:12px;overflow:hidden;
+    background:var(--panel);border:1px solid var(--line);transition:transform .25s,border-color .25s;}
+  .card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.22);}
+  .card img{width:100%;height:auto;display:block;}
+  .card figcaption{padding:12px 16px 14px;}
+  .card h3{font-size:15px;font-weight:600;margin-bottom:4px;}
+  .card span{font-size:12px;color:var(--faint);}
+
+  .about{max-width:var(--maxw);margin:0 auto;padding:64px 24px 80px;
+    display:grid;grid-template-columns:1.1fr .9fr;gap:56px;}
+  .about h2{font-size:24px;font-weight:700;margin-bottom:18px;}
+  .about p{color:var(--dim);margin-bottom:14px;max-width:52ch;}
+  .about .links a{display:flex;align-items:center;justify-content:space-between;padding:15px 0;
+    border-bottom:1px solid var(--line);font-weight:600;transition:color .2s;}
+  .about .links a:hover{color:var(--accent);}
+  .about .links span{color:var(--faint);font-weight:400;font-size:14px;}
+
+  footer{border-top:1px solid var(--line);max-width:var(--maxw);margin:0 auto;padding:30px 24px 44px;
+    display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap;color:var(--faint);font-size:13px;}
+
+  .lightbox{position:fixed;inset:0;z-index:100;background:rgba(5,5,6,.93);display:none;
+    align-items:center;justify-content:center;padding:32px;}
+  .lightbox.open{display:flex;}
+  .lightbox .inner{max-width:min(1100px,94vw);text-align:center;}
+  .lightbox img{max-width:100%;max-height:78vh;border-radius:8px;border:1px solid var(--line);}
+  .lightbox h3{margin-top:16px;font-size:18px;}
+  .lightbox p{color:var(--dim);font-size:13px;margin-top:4px;}
+  .lightbox .close{position:absolute;top:22px;right:28px;font-size:34px;color:var(--dim);
+    background:none;border:none;cursor:pointer;line-height:1;}
+  .lightbox .close:hover{color:var(--ink);}
+
+  @media (max-width:900px){.masonry{columns:2;}.about{grid-template-columns:1fr;gap:28px;}}
+  @media (max-width:560px){.masonry{columns:1;}.nav-links{display:none;}.hero{padding:56px 20px 36px;}}
+  @media (prefers-reduced-motion:reduce){*{transition:none!important;}html{scroll-behavior:auto;}}
+</style>
+</head>
+<body>
+
+  <div class="notice">
+    <b>正式内容已接入</b>
+    <span>50 张真实作品已全部分类定稿：动漫二创 / 中式志怪 / 樱花车站。此提示条正式上线前删掉即可。</span>
+  </div>
+
+  <header>
+    <nav class="nav">
+      <div class="brand"><span class="mark">织</span>织夏小忆<small>AI 影像创作</small></div>
+      <div class="nav-links">
+        <a href="#work">作品</a>
+        <a href="#about">关于</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="hero">
+    <div class="eyebrow">AI Video · Illustration</div>
+    <h1>把想象<br>变成<span class="accent">画面</span></h1>
+    <p class="sub">AI 剧情短片 × 动漫角色二创 × 中式志怪世界观。此间每一帧，皆为未竟之梦。</p>
+  </section>
+
+  <section class="work" id="work">
+    <div class="section-head">
+      <h2>作品 <span class="count" id="count"></span></h2>
+      <div class="filters">
+        <button class="filter active" data-f="all">全部</button>
+        <button class="filter" data-f="anime">动漫二创</button>
+        <button class="filter" data-f="zhongshi">中式志怪</button>
+        <button class="filter" data-f="sakura">樱花车站</button>
+      </div>
+    </div>
+    <div class="masonry" id="masonry">
+<figure class="card" data-cat="anime" data-title="2B · 尼尔：机械纪元" data-tag="动作 · 横屏">
+      <img src="web/2b.jpg" alt="2B · 尼尔：机械纪元" loading="lazy">
+      <figcaption><h3>2B · 尼尔：机械纪元</h3><span>动作 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="折木奉太郎 × 千反田爱瑠" data-tag="冰菓 · 横屏">
+      <img src="web/oreki_chitanda.jpg" alt="折木奉太郎 × 千反田爱瑠" loading="lazy">
+      <figcaption><h3>折木奉太郎 × 千反田爱瑠</h3><span>冰菓 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="爱德华·艾尔利克" data-tag="钢之炼金术师 · 横屏">
+      <img src="web/edward_elric.jpg" alt="爱德华·艾尔利克" loading="lazy">
+      <figcaption><h3>爱德华·艾尔利克</h3><span>钢之炼金术师 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="JOJO 画风 · 角色" data-tag="横屏">
+      <img src="web/jojo_wide.jpg" alt="JOJO 画风 · 角色" loading="lazy">
+      <figcaption><h3>JOJO 画风 · 角色</h3><span>横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="JOJO 画风 · 立绘" data-tag="竖屏 3:4">
+      <img src="web/jojo_tall_1.jpg" alt="JOJO 画风 · 立绘" loading="lazy">
+      <figcaption><h3>JOJO 画风 · 立绘</h3><span>竖屏 3:4</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="JOJO 画风 · 立绘" data-tag="竖屏 3:4">
+      <img src="web/jojo_tall_2.jpg" alt="JOJO 画风 · 立绘" loading="lazy">
+      <figcaption><h3>JOJO 画风 · 立绘</h3><span>竖屏 3:4</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="JOJO 画风 · 立绘" data-tag="竖屏 3:4">
+      <img src="web/jojo_tall_3.jpg" alt="JOJO 画风 · 立绘" loading="lazy">
+      <figcaption><h3>JOJO 画风 · 立绘</h3><span>竖屏 3:4</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="Saber × 吉尔伽美什" data-tag="Fate · 横屏">
+      <img src="web/saber_gilgamesh.jpg" alt="Saber × 吉尔伽美什" loading="lazy">
+      <figcaption><h3>Saber × 吉尔伽美什</h3><span>Fate · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="明日香 · 二号机" data-tag="EVA · 横屏">
+      <img src="web/asuka.jpg" alt="明日香 · 二号机" loading="lazy">
+      <figcaption><h3>明日香 · 二号机</h3><span>EVA · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="五条悟" data-tag="咒术回战 · 竖屏">
+      <img src="web/gojo.jpg" alt="五条悟" loading="lazy">
+      <figcaption><h3>五条悟</h3><span>咒术回战 · 竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="三笠 × 艾伦" data-tag="进击的巨人 · 横屏">
+      <img src="web/mikasa_1.jpg" alt="三笠 × 艾伦" loading="lazy">
+      <figcaption><h3>三笠 × 艾伦</h3><span>进击的巨人 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="三笠 × 艾伦" data-tag="进击的巨人 · 横屏">
+      <img src="web/mikasa_2.jpg" alt="三笠 × 艾伦" loading="lazy">
+      <figcaption><h3>三笠 × 艾伦</h3><span>进击的巨人 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="楪祈" data-tag="罪恶王冠 · 横屏">
+      <img src="web/inori_wide.jpg" alt="楪祈" loading="lazy">
+      <figcaption><h3>楪祈</h3><span>罪恶王冠 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="C.C. × 鲁路修" data-tag="Code Geass · 横屏">
+      <img src="web/cc_lelouch.jpg" alt="C.C. × 鲁路修" loading="lazy">
+      <figcaption><h3>C.C. × 鲁路修</h3><span>Code Geass · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="楪祈" data-tag="罪恶王冠 · 竖屏">
+      <img src="web/inori_tall.jpg" alt="楪祈" loading="lazy">
+      <figcaption><h3>楪祈</h3><span>罪恶王冠 · 竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="anime" data-title="空条承太郎 · 三乔" data-tag="JOJO · 竖屏 3:4">
+      <img src="web/more_01.jpg" alt="空条承太郎 · 三乔" loading="lazy">
+      <figcaption><h3>空条承太郎 · 三乔</h3><span>JOJO · 竖屏 3:4</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="海上升殿" data-tag="中式志怪 · 横屏">
+      <img src="web/palace_ocean.jpg" alt="海上升殿" loading="lazy">
+      <figcaption><h3>海上升殿</h3><span>中式志怪 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古装美人 · 抚琴" data-tag="竖屏">
+      <img src="web/guqin_1.jpg" alt="古装美人 · 抚琴" loading="lazy">
+      <figcaption><h3>古装美人 · 抚琴</h3><span>竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古装美人 · 抚琴" data-tag="竖屏">
+      <img src="web/guqin_2.jpg" alt="古装美人 · 抚琴" loading="lazy">
+      <figcaption><h3>古装美人 · 抚琴</h3><span>竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="仙宫 · 云海之上" data-tag="超宽幅">
+      <img src="web/palace_clouds_1.jpg" alt="仙宫 · 云海之上" loading="lazy">
+      <figcaption><h3>仙宫 · 云海之上</h3><span>超宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="仙宫 · 云海之上" data-tag="超宽幅">
+      <img src="web/palace_clouds_2.jpg" alt="仙宫 · 云海之上" loading="lazy">
+      <figcaption><h3>仙宫 · 云海之上</h3><span>超宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="满月仙宫" data-tag="竖屏">
+      <img src="web/palace_moon.jpg" alt="满月仙宫" loading="lazy">
+      <figcaption><h3>满月仙宫</h3><span>竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="云雾仙宫" data-tag="竖屏">
+      <img src="web/palace_giant.jpg" alt="云雾仙宫" loading="lazy">
+      <figcaption><h3>云雾仙宫</h3><span>竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="汉服背影" data-tag="竖屏">
+      <img src="web/hanfu_1.jpg" alt="汉服背影" loading="lazy">
+      <figcaption><h3>汉服背影</h3><span>竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="汉服背影" data-tag="竖屏">
+      <img src="web/hanfu_2.jpg" alt="汉服背影" loading="lazy">
+      <figcaption><h3>汉服背影</h3><span>竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="水墨仙宫" data-tag="青绿山水 · 竖屏">
+      <img src="web/ink_palace_1.jpg" alt="水墨仙宫" loading="lazy">
+      <figcaption><h3>水墨仙宫</h3><span>青绿山水 · 竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="水墨仙宫" data-tag="青绿山水 · 竖屏">
+      <img src="web/ink_palace_2.jpg" alt="水墨仙宫" loading="lazy">
+      <figcaption><h3>水墨仙宫</h3><span>青绿山水 · 竖屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_1.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_2.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_3.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_4.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_5.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_6.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 宽幅">
+      <img src="web/xianxia_wide_7.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 宽幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 横屏">
+      <img src="web/more_02.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 横屏">
+      <img src="web/more_03.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 横屏">
+      <img src="web/more_04.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 横屏">
+      <img src="web/more_05.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 横屏">
+      <img src="web/more_06.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 竖幅">
+      <img src="web/more_07.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 竖幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 竖幅">
+      <img src="web/more_08.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 竖幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 竖幅">
+      <img src="web/more_09.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 竖幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风少女" data-tag="古风 · 竖幅">
+      <img src="web/more_10.jpg" alt="古风少女" loading="lazy">
+      <figcaption><h3>古风少女</h3><span>古风 · 竖幅</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="sakura" data-title="樱花车站" data-tag="日系 · 4:3">
+      <img src="web/more_16.jpg" alt="樱花车站" loading="lazy">
+      <figcaption><h3>樱花车站</h3><span>日系 · 4:3</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="sakura" data-title="樱花车站" data-tag="日系 · 4:3">
+      <img src="web/more_17.jpg" alt="樱花车站" loading="lazy">
+      <figcaption><h3>樱花车站</h3><span>日系 · 4:3</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风建筑" data-tag="古风 · 4:3">
+      <img src="web/more_11.jpg" alt="古风建筑" loading="lazy">
+      <figcaption><h3>古风建筑</h3><span>古风 · 4:3</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="zhongshi" data-title="古风建筑" data-tag="古风 · 4:3">
+      <img src="web/more_12.jpg" alt="古风建筑" loading="lazy">
+      <figcaption><h3>古风建筑</h3><span>古风 · 4:3</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="sakura" data-title="樱花车站" data-tag="日系 · 横屏">
+      <img src="web/more_13.jpg" alt="樱花车站" loading="lazy">
+      <figcaption><h3>樱花车站</h3><span>日系 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="sakura" data-title="樱花车站" data-tag="日系 · 横屏">
+      <img src="web/more_14.jpg" alt="樱花车站" loading="lazy">
+      <figcaption><h3>樱花车站</h3><span>日系 · 横屏</span></figcaption>
+    </figure>
+      <figure class="card" data-cat="sakura" data-title="樱花车站" data-tag="日系 · 横屏">
+      <img src="web/more_15.jpg" alt="樱花车站" loading="lazy">
+      <figcaption><h3>樱花车站</h3><span>日系 · 横屏</span></figcaption>
+    </figure>
+    </div>
+  </section>
+
+  <section class="about" id="about">
+    <div>
+      <h2>关于我</h2>
+      <p>（占位）这里写自我介绍：你是谁、何时起做 AI 影像、主要方向——中式志怪 / 科幻 / 治愈，以及为什么。</p>
+      <p>（占位）可补充创作理念、所用工具（即梦 / 可灵 / MiniMax / Midjourney 等）。</p>
+    </div>
+    <div class="links">
+      <a href="#" onclick="return false">抖音 <span>占位 · 粘贴主页链接</span></a>
+      <a href="#" onclick="return false">哔哩哔哩 <span>占位 · 粘贴主页链接</span></a>
+      <a href="#" onclick="return false">小红书 <span>占位 · 粘贴主页链接</span></a>
+      <a href="mailto:you@example.com">邮箱联系 <span>you@example.com</span></a>
+    </div>
+  </section>
+
+  <footer>
+    <span>© 2026 织夏小忆</span>
+    <span>AI 影像作品集 · 由 Hermes 搭建</span>
+  </footer>
+
+  <div class="lightbox" id="lightbox">
+    <button class="close" id="lbClose">×</button>
+    <div class="inner">
+      <img id="lbImg" src="" alt="">
+      <h3 id="lbTitle"></h3>
+      <p id="lbTag"></p>
+    </div>
+  </div>
+
+<script>
+(function(){
+  var cards = Array.prototype.slice.call(document.querySelectorAll('.card'));
+  var filters = document.querySelectorAll('.filter');
+  var count = document.getElementById('count');
+  function apply(f){
+    var shown = 0;
+    cards.forEach(function(c){
+      var show = (f==='all') || (c.dataset.cat===f);
+      c.style.display = show ? '' : 'none';
+      if(show) shown++;
+    });
+    count.textContent = '（'+shown+' 件）';
+  }
+  filters.forEach(function(btn){
+    btn.addEventListener('click', function(){
+      filters.forEach(function(x){x.classList.remove('active');});
+      btn.classList.add('active');
+      apply(btn.dataset.f);
+    });
+  });
+  apply('all');
+
+  var lb = document.getElementById('lightbox');
+  var lbImg = document.getElementById('lbImg');
+  var lbTitle = document.getElementById('lbTitle');
+  var lbTag = document.getElementById('lbTag');
+  cards.forEach(function(c){
+    c.addEventListener('click', function(){
+      var img = c.querySelector('img');
+      lbImg.src = img.src;
+      lbTitle.textContent = c.dataset.title;
+      lbTag.textContent = c.dataset.tag;
+      lb.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    });
+  });
+  function closeLb(){lb.classList.remove('open');document.body.style.overflow='';}
+  document.getElementById('lbClose').addEventListener('click', closeLb);
+  lb.addEventListener('click', function(e){if(e.target===lb)closeLb();});
+  document.addEventListener('keydown', function(e){if(e.key==='Escape')closeLb();});
+})();
+</script>
+</body>
+</html>

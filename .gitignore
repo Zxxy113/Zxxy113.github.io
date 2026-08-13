@@ -1,0 +1,9 @@
+# 原图备份（241MB，不需要上传到 GitHub，网页用 web/ 里的压缩图）
+assets/
+
+# 占位变体版（可选，先不传）
+chinese-ink.html
+
+# 系统文件
+.DS_Store
+Thumbs.db
