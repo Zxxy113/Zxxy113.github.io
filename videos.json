@@ -8,5 +8,15 @@
     "src": "video/01.mp4",
     "cover": "video/covers/01.jpg",
     "duration": "15秒"
+  },
+  {
+    "id": 2,
+    "title": "情绪爆发戏 · 女生独白",
+    "series": "短片",
+    "episode": "情绪戏",
+    "model": "SD 2.5",
+    "src": "video/02.mp4",
+    "cover": "video/covers/02.jpg",
+    "duration": "30秒"
   }
 ]
