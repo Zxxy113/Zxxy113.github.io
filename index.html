@@ -172,6 +172,32 @@
   .vlightbox .close:hover{color:var(--ink);}
   @media (max-width:900px){.video-grid{grid-template-columns:1fr;}}
 
+  /* ============ 人物资产（密码锁 + 毛玻璃） ============ */
+  .characters{max-width:var(--maxw);margin:0 auto;padding:24px 24px 64px;}
+  .char-locked{position:relative;}
+  .char-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:24px;}
+  .char-card{border-radius:12px;overflow:hidden;background:var(--panel);border:1px solid var(--line);
+    cursor:pointer;transition:transform .25s,border-color .25s;position:relative;}
+  .char-card:hover{transform:translateY(-4px);border-color:rgba(255,255,255,.22);}
+  .char-card img{width:100%;height:auto;display:block;}
+  .char-card figcaption{padding:12px 16px 14px;}
+  .char-card h3{font-size:15px;font-weight:600;margin-bottom:4px;}
+  .char-card span{font-size:12px;color:var(--faint);}
+  .char-locked .char-card img{filter:blur(24px) brightness(.55) saturate(.6);pointer-events:none;user-select:none;}
+  .char-lock-tip{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;
+    justify-content:center;gap:12px;z-index:5;text-align:center;padding:20px;}
+  .char-lock-tip .lock-ico{width:44px;height:44px;border-radius:50%;background:var(--panel);
+    border:1px solid var(--line);display:grid;place-items:center;font-size:20px;}
+  .char-lock-tip p{color:var(--dim);font-size:14px;}
+  .char-unlock-btn{padding:9px 22px;border-radius:999px;border:1px solid var(--accent);color:var(--accent);
+    background:transparent;font-size:14px;cursor:pointer;transition:all .2s;}
+  .char-unlock-btn:hover{background:var(--accent);color:#0a0a0c;}
+  .char-pwd-wrap{display:flex;gap:8px;align-items:center;}
+  .char-pwd-wrap input{background:var(--bg);border:1px solid var(--line);color:var(--ink);
+    padding:8px 14px;border-radius:999px;font-size:14px;outline:none;width:140px;}
+  .char-pwd-wrap input:focus{border-color:var(--accent);}
+  .char-pwd-err{color:#e5696a;font-size:12px;min-height:16px;}
+
   /* ============ 快速引导 + 回到顶部 ============ */
   .quick-nav{position:fixed;right:20px;bottom:24px;z-index:55;display:flex;flex-direction:column;gap:10px;}
   .qn-btn{display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 12px;
@@ -196,8 +222,9 @@
     <nav class="nav">
       <div class="brand"><span class="mark">织</span>织夏小忆<small>AI 影像创作</small></div>
       <div class="nav-links">
-        <a href="#work">图片</a>
         <a href="#videos">视频</a>
+        <a href="#work">图片</a>
+        <a href="#characters">人物资产</a>
         <a href="#about">关于</a>
       </div>
     </nav>
@@ -209,7 +236,14 @@
     <p class="sub">AI 剧情短片 × 动漫角色二创 × 中式志怪世界观。此间每一帧，皆为未竟之梦。</p>
   </section>
 
-  <section class="work" id="work">
+  <section class="work" id="videos">
+    <div class="section-head">
+      <h2>视频作品 <span class="count" id="vcount"></span></h2>
+    </div>
+    <div class="video-grid" id="videoGrid"></div>
+  
+
+<section class="work" id="work">
     <div class="section-head">
       <h2>图片作品 <span class="count" id="count"></span></h2>
       <div class="filters">
@@ -423,11 +457,24 @@
     </div>
   </section>
 
-  <section class="work" id="videos">
+  </section>
+
+  <section class="characters" id="characters">
     <div class="section-head">
-      <h2>视频作品 <span class="count" id="vcount"></span></h2>
+      <h2>人物资产 <span class="count" id="charcount"></span></h2>
     </div>
-    <div class="video-grid" id="videoGrid"></div>
+    <div class="char-locked" id="charLocked">
+      <div class="char-grid" id="charGrid"></div>
+      <div class="char-lock-tip" id="charLockTip">
+        <div class="lock-ico">🔒</div>
+        <p>内容已加密，输入密码解锁查看与下载</p>
+        <div class="char-pwd-wrap">
+          <input type="password" id="charPwd" placeholder="请输入密码" autocomplete="off">
+          <button class="char-unlock-btn" id="charUnlockBtn">解锁</button>
+        </div>
+        <div class="char-pwd-err" id="charPwdErr"></div>
+      </div>
+    </div>
   </section>
 
   <section class="about" id="about">
@@ -452,13 +499,17 @@
 
   <!-- 快速引导 + 回到顶部 -->
   <div class="quick-nav">
+    <button class="qn-btn" data-target="videos" title="视频作品">
+      <svg viewBox="0 0 24 24"><path d="M10 8v8l6-4-6-4zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
+      <span>视频</span>
+    </button>
     <button class="qn-btn" data-target="work" title="图片作品">
       <svg viewBox="0 0 24 24"><path d="M21 19V5c0-1.1-.9-2-2-2H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h14c1.1 0 2-.9 2-2zM8.5 13.5l2.5 3.01L14.5 12l4.5 6H5l3.5-4.5z"/></svg>
       <span>图片</span>
     </button>
-    <button class="qn-btn" data-target="videos" title="视频作品">
-      <svg viewBox="0 0 24 24"><path d="M10 8v8l6-4-6-4zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z"/></svg>
-      <span>视频</span>
+    <button class="qn-btn" data-target="characters" title="人物资产">
+      <svg viewBox="0 0 24 24"><path d="M12 2C8.13 2 5 5.13 5 9c0 2.38 1.19 4.47 3 5.74V17c0 1.1.9 2 2 2h4c1.1 0 2-.9 2-2v-2.26c1.81-1.27 3-3.36 3-5.74 0-3.87-3.13-7-7-7z"/></svg>
+      <span>资产</span>
     </button>
     <button class="qn-btn qn-top" id="backTop" title="回到顶部">
       <svg viewBox="0 0 24 24"><path d="M7.41 15.41L12 10.83l4.59 4.58L18 14l-6-6-6 6z"/></svg>
@@ -593,6 +644,78 @@
   document.getElementById('vlbClose').addEventListener('click', closeVlb);
   vlb.addEventListener('click', function(e){ if(e.target === vlb) closeVlb(); });
   document.addEventListener('keydown', function(e){ if(e.key === 'Escape') closeVlb(); });
+})();
+</script>
+
+<!-- 人物资产：密码锁 + 毛玻璃 -->
+<script>
+(function(){
+  var PASSWORD = 'xiaoyi';
+  var unlocked = false;
+
+  var grid = document.getElementById('charGrid');
+  var count = document.getElementById('charcount');
+  var lockedWrap = document.getElementById('charLocked');
+  var lockTip = document.getElementById('charLockTip');
+  var pwdInput = document.getElementById('charPwd');
+  var unlockBtn = document.getElementById('charUnlockBtn');
+  var pwdErr = document.getElementById('charPwdErr');
+
+  // 人物资产数据（以后加图在这里加条目）
+  var characters = [
+    { title: '写实女性角色 · 五视图设定', tag: '角色设定 · 五视图', cover: 'web/character_01.jpg', orig: 'assets/character_01.png' }
+  ];
+
+  // 渲染卡片
+  function render(){
+    grid.innerHTML = '';
+    characters.forEach(function(ch, i){
+      var fig = document.createElement('figure');
+      fig.className = 'char-card';
+      fig.innerHTML = '<img src="' + ch.cover + '" alt="' + ch.title + '" loading="lazy">' +
+        '<figcaption><h3>' + ch.title + '</h3><span>' + ch.tag + '</span></figcaption>';
+      fig.addEventListener('click', function(){
+        if(unlocked) openCharLightbox(ch);
+      });
+      grid.appendChild(fig);
+    });
+    count.textContent = '（' + characters.length + ' 件）';
+  }
+
+  // 灯箱（复用图片灯箱）
+  function openCharLightbox(ch){
+    var lb = document.getElementById('lightbox');
+    var lbImg = document.getElementById('lbImg');
+    var lbTitle = document.getElementById('lbTitle');
+    var lbTag = document.getElementById('lbTag');
+    var lbDownload = document.getElementById('lbDownload');
+    lbImg.src = ch.cover;
+    lbTitle.textContent = ch.title;
+    lbTag.textContent = ch.tag;
+    lbDownload.href = ch.orig;
+    lbDownload.style.display = '';
+    lb.classList.add('open');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function unlock(){
+    var val = pwdInput.value.trim();
+    if(val === PASSWORD){
+      unlocked = true;
+      lockedWrap.classList.remove('char-locked');
+      lockTip.style.display = 'none';
+      pwdErr.textContent = '';
+    } else {
+      pwdErr.textContent = '密码错误，请重试';
+      pwdInput.value = '';
+      pwdInput.focus();
+    }
+  }
+
+  unlockBtn.addEventListener('click', unlock);
+  pwdInput.addEventListener('keydown', function(e){ if(e.key === 'Enter') unlock(); });
+
+  render();
 })();
 </script>
 
